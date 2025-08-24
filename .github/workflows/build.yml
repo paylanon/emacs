@@ -56,6 +56,7 @@ jobs:
 
       - name: build
         shell: msys2 {0}
+        # build options tailored for windows
         run: |
           ./autogen.sh
           mkdir build
@@ -69,7 +70,7 @@ jobs:
           export CXXFLAGS="$CFLAGS"
           export LDFLAGS="-Wl,--as-needed -Wl,--no-insert-timestamp"
           ../configure \
-            --prefix="${PWD}/../ffemacs_x86_64" \
+            --prefix="${PWD}/../ffemacs" \
             --with-w32 \
             --with-native-compilation=aot \
             --with-tree-sitter \
@@ -91,19 +92,24 @@ jobs:
             --without-imagemagick            
           make -j$(nproc)
           make install
-          ls -ld ../ffemacs_x86_64 || echo "ERROR: ffemacs_x86_64 directory not found! make install may have failed silently"
-          if [ ! -d "../ffemacs_x86_64" ]; then exit 1; fi          
+          ls -ld ../ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
+          if [ ! -d "../ffemacs" ]; then exit 1; fi
 
-      - name: package binaries
+      - name: copy in gcc dependencies
         shell: msys2 {0}
         run: |
-          zip -r ffemacs_x86_64.zip ffemacs_x86_64
+          cp gcc ffemacs/lib/gcc
+
+      # - name: package binaries
+      #   shell: msys2 {0}
+      #   run: |
+      #     zip -r ffemacs_x86_64.zip ffemacs_x86_64
           
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ffemacs-${{ steps.extract.outputs.version }}-x86_64
-          path: ffemacs_x86_64.zip
+          path: ffemacs
           retention-days: 2
 
   transfer:
@@ -127,4 +133,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             https://api.github.com/repos/PAYLHORSE-Software/ffemacs/dispatches \
-            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs_x86_64-${{ needs.build.outputs.version }}\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"
+            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ needs.build.outputs.version }}-x86_64\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"

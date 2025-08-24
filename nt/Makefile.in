@@ -120,7 +120,7 @@ MKDIR_P = @MKDIR_P@
 # ========================== Lists of Files ===========================
 
 # Things that a user might actually run, which should be installed in bindir.
-INSTALLABLES = runemacs${EXEEXT} addpm${EXEEXT}
+INSTALLABLES = runemacs${EXEEXT} addpm${EXEEXT} ffemacs_daemon${EXEEXT}
 
 # Things that Emacs runs internally, which should not be installed in bindir.
 UTILITIES = cmdproxy${EXEEXT} ddeclient${EXEEXT}
@@ -232,6 +232,9 @@ cmdproxy${EXEEXT}: ${srcdir}/cmdproxy.c
 	$(AM_V_CCLD)$(CC) ${ALL_CFLAGS} $< -o $@
 
 runemacs${EXEEXT}: ${srcdir}/runemacs.c $(EMACSRES)
+	$(AM_V_CCLD)$(CC) ${ALL_CFLAGS} $^ -mwindows -o $@
+
+ffemacs_daemon${EXEEXT}: ${srcdir}/ffemacs_daemon.c $(EMACSRES)
 	$(AM_V_CCLD)$(CC) ${ALL_CFLAGS} $^ -mwindows -o $@
 
 ## Also used in ../src/Makefile.

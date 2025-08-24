@@ -49,6 +49,7 @@ jobs:
         id: extract
         shell: bash
         run: |
+          export LC_ALL=C.UTF-8
           VERSION=$(grep -oP 'AC_INIT\(\[GNU Emacs\],\s*\[\K[^]]+' configure.ac)
           echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT

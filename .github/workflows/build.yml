@@ -57,7 +57,23 @@ jobs:
             --with-w32 \
             --with-native-compilation=aot \
             --with-tree-sitter \
-            --disable-build-details
+            --disable-build-details \
+            --with-modules \
+            --with-tree-sitter \
+            --with-xml2 \
+            --with-wide-int \
+            --with-gnutls \
+            --with-rsvg \
+            --with-mailutils \
+            --with-file-notification=w32 \
+            --without-dbus \
+            --without-gconf \
+            --without-gsettings \
+            --without-pop \
+            --without-sound \
+            --without-compress-install \
+            --without-toolkit-scroll-bars \
+            --without-imagemagick            
           make -j$(nproc)
           make install
           ls -ld ../ffemacs_x86_64 || echo "ERROR: ffemacs_x86_64 directory not found! make install may have failed"

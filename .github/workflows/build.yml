@@ -15,6 +15,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: cache msys2 packages
+        uses: actions/cache@v4
+        with:
+          path: C:\msys64\var\cache\pacman\pkg
+          key: ${{ runner.os }}-msys2-${{ hashFiles('.github/workflows/build-emacs.yml') }}
+          restore-keys: ${{ runner.os }}-msys2-
+
       - name: setup msys2 ucrt64
         uses: msys2/setup-msys2@v2
         with:

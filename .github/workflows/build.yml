@@ -1,11 +1,13 @@
 name: build emacs and package binaries
 
 on:
+  push:
+    branches:
+      - ff
+    paths:
+      # catch-all for version increments
+      - configure.ac
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release tag (e.g. v1.0.1)'
-        required: true
 
 jobs:
   build:
@@ -79,7 +81,7 @@ jobs:
             --without-imagemagick            
           make -j$(nproc)
           make install
-          ls -ld ../ffemacs_x86_64 || echo "ERROR: ffemacs_x86_64 directory not found! make install may have failed"
+          ls -ld ../ffemacs_x86_64 || echo "ERROR: ffemacs_x86_64 directory not found! make install may have failed silently"
           if [ ! -d "../ffemacs_x86_64" ]; then exit 1; fi          
 
       - name: package binaries

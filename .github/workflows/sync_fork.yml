@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: tgymnich/fork-sync@v1.8
+        continue-on-error: true
         with:
           owner: emacs-mirror
           base: master
           head: master
       - uses: tgymnich/fork-sync@v1.8
+        continue-on-error: true      
         with:
           owner: emacs-mirror
           base: ff

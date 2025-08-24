@@ -107,19 +107,6 @@ jobs:
           path: ffemacs
           retention-days: 2
 
-  transfer:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-
-      - name: download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ffemacs-${{ needs.build.outputs.version }}-x86_64
-          path: .
-
       - name: trigger target repo workflow
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}

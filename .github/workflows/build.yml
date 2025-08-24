@@ -1,4 +1,10 @@
-# stub - build system is on ff branch
+# stub
 name: build emacs and package binaries
 on:
   workflow_dispatch:
+jobs:
+  empty_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: noop
+        run: echo "Stub workflow - build system is on ff branch."

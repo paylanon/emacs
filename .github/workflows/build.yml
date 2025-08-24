@@ -72,7 +72,6 @@ jobs:
             --without-pop \
             --without-sound \
             --without-compress-install \
-            --without-toolkit-scroll-bars \
             --without-imagemagick            
           make -j$(nproc)
           make install

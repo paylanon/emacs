@@ -16,6 +16,6 @@ jobs:
           head: master
       - uses: tgymnich/fork-sync@v1.8
         with:
-          owner: emacs-master
+          owner: emacs-mirror
           base: ff
           head: master

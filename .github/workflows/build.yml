@@ -81,7 +81,6 @@ jobs:
       - name: package binaries
         shell: msys2 {0}
         run: |
-          cd ..
           zip -r ffemacs_x86_64.zip ffemacs_x86_64
           
       - name: upload binaries as artifact

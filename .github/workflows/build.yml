@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build:
     runs-on: windows-latest
     steps:
@@ -43,6 +44,14 @@ jobs:
             mingw-w64-ucrt-x86_64-libtiff mingw-w64-ucrt-x86_64-libunistring mingw-w64-ucrt-x86_64-libxml2
             mingw-w64-ucrt-x86_64-nettle mingw-w64-ucrt-x86_64-p11-kit mingw-w64-ucrt-x86_64-winpthreads
             mingw-w64-ucrt-x86_64-xpm-nox mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-zlib pkgconf texinfo zip
+
+      - name: extract version from configure.ac
+        id: extract
+        shell: bash
+        run: |
+          VERSION=$(grep -oP 'AC_INIT\(\[GNU Emacs\],\s*\[\K[^]]+' configure.ac)
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: build
         shell: msys2 {0}
@@ -92,6 +101,29 @@ jobs:
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ffemacs_x86_64
+          name: ffemacs-${{ steps.extract.outputs.version }}-x86_64
           path: ffemacs_x86_64.zip
           retention-days: 2
+
+  transfer:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ffemacs-${{ needs.build.outputs.version }}-x86_64
+          path: .
+
+      - name: trigger target repo workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/PAYLHORSE-Software/ffemacs/dispatches \
+            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs_x86_64-${{ needs.build.outputs.version }}\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"

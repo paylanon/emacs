@@ -14,8 +14,6 @@ jobs:
       - run: git config --global core.autocrlf input
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history for autogen
 
       - name: setup msys2 ucrt64
         uses: msys2/setup-msys2@v2
@@ -47,7 +45,7 @@ jobs:
           ../configure \
             --prefix="${PWD}/../ffemacs_x86_64" \
             --with-native-compilation=aot \
-            --with-tree-sitter \
+            --with-tree-sitter
           make -j$(nproc)
           make install
 

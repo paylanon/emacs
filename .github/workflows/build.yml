@@ -28,16 +28,16 @@ jobs:
           msystem: UCRT64
           update: true
           install: >-
-            autoconf autogen automake automake-wrapper git libidn-devel libltdl libnettle-devel libopenssl
+            autoconf autogen automake automake-wrapper git libidn-devel libltdl libnettle-devel
             libp11-kit-devel libtasn1-devel libunistring make mingw-w64-ucrt-x86_64-toolchain
             mingw-w64-ucrt-x86_64-bzip2 mingw-w64-ucrt-x86_64-cairo mingw-w64-ucrt-x86_64-crt-git
             mingw-w64-ucrt-x86_64-expat mingw-w64-ucrt-x86_64-fontconfig mingw-w64-ucrt-x86_64-freetype
             mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-gcc-libs mingw-w64-ucrt-x86_64-gdk-pixbuf2
             mingw-w64-ucrt-x86_64-gettext mingw-w64-ucrt-x86_64-giflib mingw-w64-ucrt-x86_64-glib2
             mingw-w64-ucrt-x86_64-gmp mingw-w64-ucrt-x86_64-gnutls mingw-w64-ucrt-x86_64-harfbuzz
-            mingw-w64-ucrt-x86_64-headers-git mingw-w64-ucrt-x86_64-imagemagick mingw-w64-ucrt-x86_64-libgccjit
+            mingw-w64-ucrt-x86_64-headers-git mingw-w64-ucrt-x86_64-libgccjit
             mingw-w64-ucrt-x86_64-libiconv mingw-w64-ucrt-x86_64-libidn2 mingw-w64-ucrt-x86_64-libjpeg-turbo
-            mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-librsvg mingw-w64-ucrt-x86_64-sqlite3
+            mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-librsvg
             mingw-w64-ucrt-x86_64-libtree-sitter mingw-w64-ucrt-x86_64-libtiff mingw-w64-ucrt-x86_64-libunistring
             mingw-w64-ucrt-x86_64-libxml2 mingw-w64-ucrt-x86_64-nettle mingw-w64-ucrt-x86_64-p11-kit
             mingw-w64-ucrt-x86_64-winpthreads mingw-w64-ucrt-x86_64-xpm-nox mingw-w64-ucrt-x86_64-xz
@@ -49,12 +49,19 @@ jobs:
           ./autogen.sh
           mkdir build
           cd build
+          export CFLAGS="-O3 -fno-math-errno -funsafe-math-optimizations -fno-finite-math-only -fno-trapping-math -freciprocal-math -fno-rounding-math -fno-signaling-nans -fassociative-math -fno-signed-zeros -frename-registers -funroll-loops -mtune=native -march=native -fomit-frame-pointer -fallow-store-data-races -fno-semantic-interposition -floop-parallelize-all -ftree-parallelize-loops=4"
+          export CXXFLAGS="$CFLAGS"
+          export LDFLAGS="-Wl,--as-needed -Wl,--no-insert-timestamp"
           ../configure \
             --prefix="${PWD}/../ffemacs_x86_64" \
+            --with-w32 \
             --with-native-compilation=aot \
-            --with-tree-sitter
+            --with-tree-sitter \
+            --disable-build-details
           make -j$(nproc)
           make install
+          ls -ld ../ffemacs_x86_64 || echo "ERROR: ffemacs_x86_64 directory not found! make install may have failed"
+          if [ ! -d "../ffemacs_x86_64" ]; then exit 1; fi          
 
       - name: package binaries
         shell: msys2 {0}

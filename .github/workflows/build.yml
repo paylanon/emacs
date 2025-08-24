@@ -98,12 +98,7 @@ jobs:
       - name: copy in gcc dependencies
         shell: msys2 {0}
         run: |
-          cp gcc ffemacs/lib/gcc
-
-      # - name: package binaries
-      #   shell: msys2 {0}
-      #   run: |
-      #     zip -r ffemacs_x86_64.zip ffemacs_x86_64
+          cp -r gcc ffemacs/lib/gcc
           
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4

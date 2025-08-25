@@ -1,0 +1,133 @@
+name: build emacs and upload binaries
+
+on:
+  push:
+    branches:
+      - ff
+    paths:
+      # catch-all for version increments
+      - configure.ac
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: msys2 {0}
+
+jobs:
+
+  build_and_upload:
+    runs-on: windows-latest
+    steps:
+      - shell: cmd
+        run: git config --global core.autocrlf input
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: cache msys2 packages
+        uses: actions/cache@v4
+        with:
+          path: C:\msys64\var\cache\pacman\pkg
+          key: ${{ runner.os }}-msys2-${{ hashFiles('.github/workflows/build-emacs.yml') }}
+          restore-keys: ${{ runner.os }}-msys2-
+
+      - name: setup msys2 ucrt64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            autoconf autogen automake automake-wrapper git libidn-devel libltdl libnettle-devel
+            libp11-kit-devel libtasn1-devel libunistring make mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-bzip2 mingw-w64-ucrt-x86_64-cairo mingw-w64-ucrt-x86_64-crt-git
+            mingw-w64-ucrt-x86_64-expat mingw-w64-ucrt-x86_64-fontconfig mingw-w64-ucrt-x86_64-freetype
+            mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-gcc-libs mingw-w64-ucrt-x86_64-gdk-pixbuf2
+            mingw-w64-ucrt-x86_64-gettext mingw-w64-ucrt-x86_64-giflib mingw-w64-ucrt-x86_64-glib2
+            mingw-w64-ucrt-x86_64-gmp mingw-w64-ucrt-x86_64-gnutls mingw-w64-ucrt-x86_64-harfbuzz 
+            mingw-w64-ucrt-x86_64-headers-git mingw-w64-ucrt-x86_64-jbigkit mingw-w64-ucrt-x86_64-libgccjit
+            mingw-w64-ucrt-x86_64-libiconv mingw-w64-ucrt-x86_64-libidn2 mingw-w64-ucrt-x86_64-libjpeg-turbo
+            mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-librsvg mingw-w64-ucrt-x86_64-libtree-sitter
+            mingw-w64-ucrt-x86_64-libtiff mingw-w64-ucrt-x86_64-libunistring mingw-w64-ucrt-x86_64-libxml2
+            mingw-w64-ucrt-x86_64-nettle mingw-w64-ucrt-x86_64-p11-kit mingw-w64-ucrt-x86_64-winpthreads
+            mingw-w64-ucrt-x86_64-xpm-nox mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-zlib pkgconf texinfo zip
+
+      # - name: extract version from configure.ac
+      #   id: extract
+      #   run: |
+      #     export LC_ALL=C.UTF-8
+      #     VERSION=$(grep -oP 'AC_INIT\(\[GNU Emacs\],\s*\[\K[^]]+' configure.ac)
+      #     FF_VERSION="${VERSION}-b${GITHUB_RUN_NUMBER}"
+      #     echo "Extracted version: $FF_VERSION"
+      #     echo "version=$FF_VERSION" >> $GITHUB_OUTPUT
+
+      - name: extract version from configure.ac
+        id: extract
+        run: |
+          export LC_ALL=C.UTF-8
+          VERSION=$(grep -oP 'AC_INIT\(\[GNU Emacs\],\s*\[\K[^]]+' configure.ac)
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: build
+        # build options tailored for windows
+        run: |
+          ./autogen.sh
+          mkdir build
+          cd build
+          export CFLAGS="-O3 -fno-math-errno -funsafe-math-optimizations \
+          -fno-finite-math-only -fno-trapping-math -freciprocal-math \
+          -fno-rounding-math -fno-signaling-nans -fassociative-math \
+          -fno-signed-zeros -frename-registers -funroll-loops \
+          -mtune=native -march=native -fomit-frame-pointer -fallow-store-data-races \
+          -fno-semantic-interposition -floop-parallelize-all -ftree-parallelize-loops=4"
+          export CXXFLAGS="$CFLAGS"
+          export LDFLAGS="-Wl,--as-needed -Wl,--no-insert-timestamp"
+          ../configure \
+            --prefix="${PWD}/../ffemacs" \
+            --with-w32 \
+            --with-native-compilation=aot \
+            --with-tree-sitter \
+            --disable-build-details \
+            --with-modules \
+            --with-tree-sitter \
+            --with-xml2 \
+            --with-wide-int \
+            --with-gnutls \
+            --with-rsvg \
+            --with-mailutils \
+            --with-file-notification=w32 \
+            --without-dbus \
+            --without-gconf \
+            --without-gsettings \
+            --without-pop \
+            --without-sound \
+            --without-compress-install \
+            --without-imagemagick            
+          make -j$(nproc)
+          make install
+          ls -ld ../ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
+          if [ ! -d "../ffemacs" ]; then exit 1; fi
+
+      - name: copy in gcc dependencies
+        run: |
+          cp -r gcc ffemacs/lib/gcc
+
+      - name: package binaries
+        run: |
+          zip -r ffemacs.zip ffemacs
+          
+      - name: upload binaries as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip
+          path: ffemacs.zip
+          retention-days: 2
+
+      - name: trigger target repo workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/PAYLHORSE-Software/ffemacs/dispatches \
+            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"

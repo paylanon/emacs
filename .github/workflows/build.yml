@@ -81,25 +81,24 @@ jobs:
             --disable-build-details \
             --with-modules \
             --with-tree-sitter \
-            --with-xml2 \
-            --with-wide-int \
-            --with-gnutls \
-            --with-rsvg \
-            --with-mailutils \
-            --with-file-notification=w32 \
+            --with-wide-int \            
+            --with-file-notification=w32 \            
+            --without-gnutls \
+            --without-rsvg \
+            --without-mailutils \
             --without-dbus \
             --without-gconf \
             --without-gsettings \
             --without-pop \
             --without-sound \
             --without-compress-install \
-            --without-imagemagick            
+            --without-imagemagick
           make -j$(nproc)
           make install
           ls -ld ../zipme/ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
           if [ ! -d "../zipme/ffemacs" ]; then exit 1; fi
 
-      - name: copy in gcc dependencies
+      - name: copy in .dlls and gcc dependencies
         run: |
           cp -r gcc zipme/ffemacs/lib/gcc
           

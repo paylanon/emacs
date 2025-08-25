@@ -101,12 +101,16 @@ jobs:
       - name: copy in gcc dependencies
         run: |
           cp -r gcc ffemacs/lib/gcc
+
+      - name: package binaries
+        run: |
+          zip -r ffemacs.zip ffemacs
           
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ffemacs-${{ steps.extract.outputs.version }}-x86_64
-          path: ffemacs
+          name: ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip
+          path: ffemacs.zip
           retention-days: 2
 
       - name: trigger target repo workflow
@@ -117,4 +121,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             https://api.github.com/repos/PAYLHORSE-Software/ffemacs/dispatches \
-            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ steps.extract.outputs.version }}-x86_64\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"
+            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"

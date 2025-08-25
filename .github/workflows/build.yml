@@ -98,6 +98,10 @@ jobs:
           ls -ld ../ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
           if [ ! -d "../ffemacs" ]; then exit 1; fi
 
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: copy in gcc dependencies
         run: |
           cp -r gcc ffemacs/lib/gcc

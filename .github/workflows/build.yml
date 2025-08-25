@@ -1,4 +1,8 @@
-name: build emacs and package binaries
+name: build emacs and upload binaries
+
+defaults:
+  run:
+    shell: msys2 {0}
 
 on:
   push:
@@ -47,7 +51,6 @@ jobs:
 
       - name: extract version from configure.ac
         id: extract
-        shell: bash
         run: |
           export LC_ALL=C.UTF-8
           VERSION=$(grep -oP 'AC_INIT\(\[GNU Emacs\],\s*\[\K[^]]+' configure.ac)
@@ -55,7 +58,6 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: build
-        shell: msys2 {0}
         # build options tailored for windows
         run: |
           ./autogen.sh
@@ -96,7 +98,6 @@ jobs:
           if [ ! -d "../ffemacs" ]; then exit 1; fi
 
       - name: copy in gcc dependencies
-        shell: msys2 {0}
         run: |
           cp -r gcc ffemacs/lib/gcc
           

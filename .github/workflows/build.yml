@@ -9,13 +9,14 @@ on:
       - configure.ac
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: msys2 {0}
+
 jobs:
 
-  build:
+  build_and_upload:
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - shell: cmd
         run: git config --global core.autocrlf input
@@ -97,10 +98,6 @@ jobs:
           ls -ld ../ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
           if [ ! -d "../ffemacs" ]; then exit 1; fi
 
-  upload:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: copy in gcc dependencies
         run: |
           cp -r gcc ffemacs/lib/gcc
@@ -120,4 +117,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             https://api.github.com/repos/PAYLHORSE-Software/ffemacs/dispatches \
-            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ needs.build.outputs.version }}-x86_64\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"
+            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ steps.extract.outputs.version }}-x86_64\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"

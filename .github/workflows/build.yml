@@ -74,7 +74,7 @@ jobs:
           export CXXFLAGS="$CFLAGS"
           export LDFLAGS="-Wl,--as-needed -Wl,--no-insert-timestamp"
           ../configure \
-            --prefix="${PWD}/../ffemacs" \
+            --prefix="${PWD}/../zipme/ffemacs" \
             --with-w32 \
             --with-native-compilation=aot \
             --with-tree-sitter \
@@ -96,18 +96,18 @@ jobs:
             --without-imagemagick            
           make -j$(nproc)
           make install
-          ls -ld ../ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
-          if [ ! -d "../ffemacs" ]; then exit 1; fi
+          ls -ld ../zipme/ffemacs || echo "ERROR: ffemacs directory not found! make install may have failed silently"
+          if [ ! -d "../zipme/ffemacs" ]; then exit 1; fi
 
       - name: copy in gcc dependencies
         run: |
-          cp -r gcc ffemacs/lib/gcc
+          cp -r gcc zipme/ffemacs/lib/gcc
           
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip
-          path: ffemacs
+          name: ffemacs-${{ steps.extract.outputs.version }}-x86_64
+          path: zipme
           retention-days: 2
 
       - name: trigger target repo workflow
@@ -118,4 +118,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             https://api.github.com/repos/PAYLHORSE-Software/ffemacs/dispatches \
-            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"
+            -d "{\"event_type\":\"receive_emacs_binaries\",\"client_payload\":{\"artifact_name\":\"ffemacs-${{ steps.extract.outputs.version }}-x86_64\",\"source_repo\":\"${{ github.repository }}\",\"source_run_id\":\"${{ github.run_id }}\"}}"

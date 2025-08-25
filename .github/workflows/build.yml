@@ -102,16 +102,12 @@ jobs:
       - name: copy in gcc dependencies
         run: |
           cp -r gcc ffemacs/lib/gcc
-
-      - name: package binaries
-        run: |
-          zip -r ffemacs.zip ffemacs
           
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ffemacs-${{ steps.extract.outputs.version }}-x86_64.zip
-          path: ffemacs.zip
+          path: ffemacs
           retention-days: 2
 
       - name: trigger target repo workflow

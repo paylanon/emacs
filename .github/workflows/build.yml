@@ -55,8 +55,9 @@ jobs:
         run: |
           export LC_ALL=C.UTF-8
           VERSION=$(grep -oP 'AC_INIT\(\[GNU Emacs\],\s*\[\K[^]]+' configure.ac)
-          echo "Extracted version: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          FF_VERSION="${VERSION}-b${GITHUB_RUN_NUMBER}"
+          echo "Extracted version: $FF_VERSION"
+          echo "version=$FF_VERSION" >> $GITHUB_OUTPUT
 
       - name: build
         # build options tailored for windows

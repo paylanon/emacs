@@ -31,6 +31,7 @@ jobs:
           restore-keys: ${{ runner.os }}-msys2-
 
       - name: setup msys2 ucrt64
+        id: msys2
         uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
@@ -102,6 +103,32 @@ jobs:
       - name: copy in .dlls and gcc dependencies
         run: |
           cp -r gcc zipme/ffemacs/lib/gcc
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libbrotlicommon.dll zipme/ffemacs/bin/libbrotlicommon.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libbrotlidec.dll zipme/ffemacs/bin/libbrotlidec.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libbz2-1.dll zipme/ffemacs/bin/libbz2-1.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libfreetype-6.dll zipme/ffemacs/bin/libfreetype-6.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libgccjit-0.dll zipme/ffemacs/bin/libgccjit-0.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libgcc_s_seh-1.dll zipme/ffemacs/bin/libgcc_s_seh-1.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libglib-2.0-0.dll zipme/ffemacs/bin/libglib-2.0-0.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libgmp-10.dll zipme/ffemacs/bin/libgmp-10.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libgomp-1.dll zipme/ffemacs/bin/libgomp-1.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libgraphite2.dll zipme/ffemacs/bin/libgraphite2.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libharfbuzz-0.dll zipme/ffemacs/bin/libharfbuzz-0.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libiconv-2.dll zipme/ffemacs/bin/libiconv-2.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libintl-8.dll zipme/ffemacs/bin/libintl-8.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libisl-23.dll zipme/ffemacs/bin/libisl-23.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libmpc-3.dll zipme/ffemacs/bin/libmpc-3.dll 
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libmpfr-6.dll zipme/ffemacs/bin/libmpfr-6.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libpcre2-8-0.dll zipme/ffemacs/bin/libpcre2-8-0.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libpng16-16.dll zipme/ffemacs/bin/libpng16-16.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libstdc++-6.dll zipme/ffemacs/bin/libstdc++-6.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libtree-sitter-0.25.dll zipme/ffemacs/bin/libtree-sitter-0.25.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libwinpthread-1.dll zipme/ffemacs/bin/libwinpthread-1.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libXpm-noX4.dll zipme/ffemacs/bin/libXpm-noX4.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/libzstd.dll zipme/ffemacs/bin/libzstd.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/wasmtime.dll zipme/ffemacs/bin/wasmtime.dll
+          cp ${{ steps.msys2.outputs.msys2-location }}/ucrt64/bin/zlib1.dll zipme/ffemacs/bin/zlib1.dll
+          
           
       - name: upload binaries as artifact
         uses: actions/upload-artifact@v4

@@ -48,7 +48,7 @@ jobs:
             mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-librsvg mingw-w64-ucrt-x86_64-libtree-sitter
             mingw-w64-ucrt-x86_64-libtiff mingw-w64-ucrt-x86_64-libunistring mingw-w64-ucrt-x86_64-nettle 
             mingw-w64-ucrt-x86_64-p11-kit mingw-w64-ucrt-x86_64-winpthreads mingw-w64-ucrt-x86_64-xpm-nox 
-            mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-zlib pkgconf texinfo zip
+            mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-zlib pkgconf texinfo zip mingw-w64-ucrt-x86_64-libxml2
 
       - name: extract version from configure.ac
         id: extract
@@ -81,8 +81,12 @@ jobs:
             --disable-build-details \
             --with-modules \
             --with-tree-sitter \
-            --with-wide-int \            
-            --with-file-notification=w32 \            
+            --with-xml2 \
+            --with-wide-int \
+            --with-gnutls \
+            --with-rsvg \
+            --with-mailutils \
+            --with-file-notification=w32 \
             --without-dbus \
             --without-gconf \
             --without-gsettings \

@@ -46,9 +46,9 @@ jobs:
             mingw-w64-ucrt-x86_64-headers-git mingw-w64-ucrt-x86_64-jbigkit mingw-w64-ucrt-x86_64-libgccjit
             mingw-w64-ucrt-x86_64-libiconv mingw-w64-ucrt-x86_64-libidn2 mingw-w64-ucrt-x86_64-libjpeg-turbo
             mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-librsvg mingw-w64-ucrt-x86_64-libtree-sitter
-            mingw-w64-ucrt-x86_64-libtiff mingw-w64-ucrt-x86_64-libunistring mingw-w64-ucrt-x86_64-libxml2
-            mingw-w64-ucrt-x86_64-nettle mingw-w64-ucrt-x86_64-p11-kit mingw-w64-ucrt-x86_64-winpthreads
-            mingw-w64-ucrt-x86_64-xpm-nox mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-zlib pkgconf texinfo zip
+            mingw-w64-ucrt-x86_64-libtiff mingw-w64-ucrt-x86_64-libunistring mingw-w64-ucrt-x86_64-nettle 
+            mingw-w64-ucrt-x86_64-p11-kit mingw-w64-ucrt-x86_64-winpthreads mingw-w64-ucrt-x86_64-xpm-nox 
+            mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-zlib pkgconf texinfo zip
 
       - name: extract version from configure.ac
         id: extract
@@ -83,9 +83,6 @@ jobs:
             --with-tree-sitter \
             --with-wide-int \            
             --with-file-notification=w32 \            
-            --without-gnutls \
-            --without-rsvg \
-            --without-mailutils \
             --without-dbus \
             --without-gconf \
             --without-gsettings \

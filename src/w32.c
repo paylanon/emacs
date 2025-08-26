@@ -10519,9 +10519,13 @@ init_ntproc (int dumping)
 		     FALSE,
 		     DUPLICATE_SAME_ACCESS);
 
+#ifndef _UCRT
     fclose (stdin);
     fclose (stdout);
     fclose (stderr);
+#else
+    _fcloseall();
+#endif
 
     if (stdin_save != INVALID_HANDLE_VALUE)
       _open_osfhandle ((intptr_t) stdin_save, O_TEXT);

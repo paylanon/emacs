@@ -1592,6 +1592,8 @@ After THEME has been enabled, runs `enable-theme-functions'."
 	  (cons theme (remq theme custom-enabled-themes)))
     ;; Give the `user' theme the highest priority.
     (enable-theme 'user))
+  ;; Update w32 caption color
+  (w32-apply-caption-color)
   ;; Allow callers to react to the enabling.
   (run-hook-with-args 'enable-theme-functions theme))
 

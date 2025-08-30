@@ -39,6 +39,7 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <oleidl.h>
 #include <objidl.h>
 #include <ole2.h>
+#include <assert.h> // TEMP
 
 #include "lisp.h"
 #include "w32term.h"
@@ -99,6 +100,9 @@ typedef enum _WTS_VIRTUAL_CLASS {
 /* For Windows 10 version 2004 and higher, and Windows 11. */
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+#ifndef DWMWA_CAPTION_COLOR
+#define DWMWA_CAPTION_COLOR 35
 #endif
 
 #ifndef FOF_NO_CONNECTED_ELEMENTS
@@ -530,6 +534,27 @@ w32_fullscreen_rect (HWND hwnd, int fsmode, RECT normal, RECT *rect)
 }
 
 
+
+DEFUN ("w32-apply-caption-color", Fw32_apply_caption_color,
+       Sw32_apply_caption_color, 0, 1, 0,
+       doc: /* Apply Windows caption color for FRAME.*/)
+  (Lisp_Object frame)
+{
+
+  struct frame *f = decode_any_frame (frame);
+  if (!FRAME_W32_P (f))
+    return Qnil;
+
+  /* Set titlebar color */
+  DWORD attr = DWMWA_CAPTION_COLOR;
+  COLORREF cref_bg = FRAME_BACKGROUND_PIXEL (f) & 0x00FFFFFF;
+  /* COLORREF cref_bg = 0xFFFFFFFE; */
+  HRESULT hr = DwmSetWindowAttribute_fn (FRAME_W32_WINDOW (f), attr, &cref_bg, sizeof (cref_bg));
+
+  if (FAILED(hr)) return Qnil;
+
+  return Qt;
+}
 
 DEFUN ("w32-define-rgb-color", Fw32_define_rgb_color,
        Sw32_define_rgb_color, 4, 4, 0,
@@ -11413,7 +11438,10 @@ keys when IME input is received.  */);
 
   /* W32 specific functions */
 
+  defsubr (&Sw32_apply_caption_color);
+
   defsubr (&Sw32_define_rgb_color);
+
   defsubr (&Sw32_display_monitor_attributes_list);
   defsubr (&Sw32_send_sys_command);
   defsubr (&Sw32_shell_execute);

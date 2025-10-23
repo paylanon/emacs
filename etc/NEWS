@@ -435,6 +435,11 @@ This will inhibit implied resizing while a new frame is made and can be
 useful on tiling window managers where the initial frame size should be
 specified by external means.
 
+---
+*** Frames can now be renamed to F<number> on text terminals.
+Unlike with other frame names, an attempt to rename to F<number> throws
+an error when a frame of that name already exists.
+
 ** Mode Line
 
 +++
@@ -2668,6 +2673,13 @@ New faces have been added to 'icomplete-vertical-mode':
   appearance of unselected candidate prefixes.
 
 ** Customize
+
++++
+*** New function 'custom-initialize-after-file-load'.
+Useful to delay initialization to the end of the file, so it can use
+functions defined later than the variable, as is common for minor modes.
+'define-globalized-minor-mode' now automatically uses it if the
+init-value is non-nil.
 
 ---
 *** New major mode 'Customize-dirlocals-mode'.

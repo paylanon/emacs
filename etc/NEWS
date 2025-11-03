@@ -444,6 +444,16 @@ This will inhibit implied resizing while a new frame is made and can be
 useful on tiling window managers where the initial frame size should be
 specified by external means.
 
++++
+*** New option 'alter-fullscreen-frames'.
+This option is useful to maintain a consistent state when attempting to
+resize fullscreen frames.  It defaults to 'inhibit' on NS builds which
+means that a fullscreen frame would not change size.  It defaults to nil
+everywhere else which means that the window manager is supposed to
+either resize the frame and change the fullscreen status accordingly or
+keep the frame size unchanged.  The value t means to first reset the
+fullscreen status and then resize the frame.
+
 ---
 *** Frames can now be renamed to F<number> on text terminals.
 Unlike with other frame names, an attempt to rename to F<number> throws
@@ -3408,6 +3418,12 @@ removed in next Emacs release.
 This is an abbreviation for using the name of the keymap as the prefix
 command name.  E.g., '(defvar-keymap foo-map :prefix t)' is equivalent
 to '(defvar-keymap foo-map :prefix 'foo-map)'.
+
+---
+** Emacs PGTK toolkit respects dark and light modes.
+Emacs when built with the pure GTK toolkit now respects desktop
+dark and light modes for drawing a GTK toolbar and widgets,
+automatically toggling between them.
 
 
 * Changes in Emacs 31.1 on Non-Free Operating Systems

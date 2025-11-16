@@ -1294,6 +1294,13 @@ The prompts 'opstring' and 'active-opstring' can now either be strings
 or functions.  This is useful when your prompts can benefit from dynamic
 content.
 
+---
+*** New Ibuffer-dedicated faces.
+New faces 'ibuffer-marked', 'ibuffer-deletion', 'ibuffer-title', and
+'ibuffer-filter-group-name'.  By default they inherit from the
+general-purpose faces Ibuffer previously used, to preserve previous
+behavior.
+
 ** ElDoc
 
 ---
@@ -2260,6 +2267,11 @@ When non-nil, highlight the character shortcut in the menu entry's
 string instead of preprending it and 'tmm-mid-prompt' to said entry.
 
 ** Foldout
+
+*** Improved behavior of 'foldout-exit-fold' with negative prefix argument.
+When 'foldout-exit-fold' is called with a negative argument (so that the
+exited fold remains visible), the position of point and window view are
+preserved.
 
 ---
 *** New command 'foldout-widen-to-current-fold'.

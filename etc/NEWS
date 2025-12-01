@@ -927,7 +927,7 @@ available when such modes are turned on.
 *** 'treesit-extra-load-path' now is a customizable user option.
 The first directory in the list is used as the default directory
 to install the language grammar when 'treesit-auto-install-grammar'
-is 'ask' or 'ask-dir'.
+is 'ask', 'ask-dir' or 'always'.
 
 *** 'treesit-language-source-alist' supports keywords.
 The language and URL are mandatory, but remaining data can use keywords:
@@ -2528,6 +2528,11 @@ bindings:
 - 'C-x v I D' is bound to 'vc-root-diff-incoming'
 - 'C-x v O L' is bound to 'vc-log-outgoing'
 - 'C-x v O D' is bound to 'vc-root-diff-outgoing'.
+
+---
+*** New display of outgoing revisions count in VC-Dir.
+If there are outgoing revisions, VC-Dir now includes a count of how many
+in its headers, to remind you to push them.
 
 +++
 *** New user option 'vc-async-checkin' to enable async checkin operations.

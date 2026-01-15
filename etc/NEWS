@@ -2077,6 +2077,14 @@ option 'doc-view-djvused-program'.
 The default value is now 30 seconds, as the old value was too short to
 allow reading the help text.
 
++++
+*** Ispell can now save spelling corrections as abbrevs.
+In the Ispell command loop, type 'C-u' immediately before selecting a
+replacement to toggle whether that correction will be saved as a global
+abbrev expansion for its misspelling.  The new user option
+'ispell-save-corrections-as-abbrevs' determines whether abbrev saving
+is enabled by default.
+
 ** Flyspell
 
 ---
@@ -2668,8 +2676,8 @@ relevant buffers before generating the contents of a VC Directory buffer
 *** New commands to report incoming and outgoing diffs.
 'vc-root-diff-incoming' and 'vc-root-diff-outgoing' report diffs of all
 the changes that would be pulled and would be pushed, respectively.
-They are the diff analogues of the existing commands 'vc-log-incoming'
-and 'vc-log-outgoing'.
+They are the diff analogues of the existing commands
+'vc-root-log-incoming' and 'vc-root-log-outgoing'.
 
 In particular, 'vc-root-diff-outgoing' is useful as a way to preview
 your push and ensure that all and only the changes you intended to
@@ -2692,9 +2700,9 @@ If this is customized to non-nil, 'C-x v I' and 'C-x v O' become prefix
 commands, such that the new incoming and outgoing commands have global
 bindings:
 
-- 'C-x v I L' is bound to 'vc-log-incoming'
+- 'C-x v I L' is bound to 'vc-root-log-incoming'
 - 'C-x v I D' is bound to 'vc-root-diff-incoming'
-- 'C-x v O L' is bound to 'vc-log-outgoing'
+- 'C-x v O L' is bound to 'vc-root-log-outgoing'
 - 'C-x v O D' is bound to 'vc-root-diff-outgoing'.
 
 +++
@@ -3903,6 +3911,13 @@ extended to encompass other toolkit-specific symbols in the future.
 called on progress steps, and DONE-CALLBACK, called when the progress
 reporter is done.  See the 'make-progress-reporter' docstring for a full
 specification of these new optional arguments.
+
++++
+** Progress reporter context.
+'make-progress-reporter' now accepts the optional argument CONTEXT,
+which if it is the symbol 'async', inhibits updates in the echo area
+when it is busy.  This is useful, for example, if you want to monitor progress
+of an inherently asynchronous command such as 'compile'.
 
 ** Binary format specifications '%b' and '%B' added.
 These produce the binary representation of a number.

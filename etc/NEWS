@@ -199,6 +199,13 @@ different completion categories by customizing
 be updated as you type, or nil to suppress this always.  Note that for
 large or inefficient completion tables this can slow down typing.
 
++++
+*** New optional value of 'minibuffer-visible-completions'.
+If the value of this option is 'up-down', only the <UP> and <DOWN> arrow
+keys move point between candidates shown in the *Completions* buffer
+display, while <RIGHT> and <LEFT> arrows move point in the minibuffer
+window.
+
 ---
 *** 'RET' chooses the completion selected with 'M-<up>/M-<down>'.
 If a completion candidate is selected with 'M-<up>' or 'M-<down>',
@@ -691,6 +698,12 @@ project, during completion.  That makes some items shorter.
 *** 'project-switch-buffer' uses 'project-buffer' as completion category.
 The category defaults are the same as for 'buffer' but any user
 customizations would need to be re-added.
+
++++
+*** 'project-mode-line' can now show project name only for local files.
+If the value of 'project-mode-line' is 'non-remote', project name and
+the Project menu will be shown on the mode line only for projects with
+local files.
 
 ** Help
 
@@ -2046,6 +2059,14 @@ of symbols.
 When you kill the IELM process with 'C-c C-c', the input history is now
 saved to the file specified by 'ielm-history-file-name', just like when
 you exit the Emacs session or kill the IELM buffer.
+
+---
+*** New value 'point' for user option 'ielm-dynamic-return'.
+When 'ielm-dynamic-return' is set to 'point', typing RET has dynamic
+behavior based on whether point is inside an sexp.  While point is
+inside an sexp typing RET inserts a newline, and otherwise Emacs
+proceeds with evaluating the expression.  This is useful when
+'electric-pair-mode', or a similar automatic pairing mode, is enabled.
 
 ** DocView
 

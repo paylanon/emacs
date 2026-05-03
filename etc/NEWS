@@ -976,11 +976,10 @@ It is equivalent to running 'project-any-command' with
 The prompt now displays the chosen project on which to invoke a command.
 
 ---
-*** 'project-prompter' values may be called with up to four arguments.
+*** 'project-prompter' values may be called with up to three arguments.
 These allow callers of the value of 'project-prompter' to specify a
 prompt string; prompt the user to choose between a subset of all the
-known projects; disallow returning arbitrary directories; and allow
-returning an empty string.
+known projects; and disallow returning arbitrary directories.
 See the docstring of 'project-prompter' for a full specification of
 these new optional arguments.
 
@@ -4488,11 +4487,6 @@ caused by calling 'message' with a nil argument.
 the minibuffer, instead of waiting with 'sit-for' and then clearing it.
 This makes 'minibuffer-message' usable in Lisp programs which want to
 print a message and then continue to perform work.
-
----
-** New variable 'completion-preview-is-calling'.
-Completion functions (in 'completion-at-point-functions') can check this
-variable to tell if they are being called by Completion Preview mode.
 
 ** Special Events
 

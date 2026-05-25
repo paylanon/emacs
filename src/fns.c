@@ -902,7 +902,7 @@ concat_to_string (ptrdiff_t nargs, Lisp_Object *args)
 
       result_len += len;
       if (MOST_POSITIVE_FIXNUM < result_len)
-	memory_full (SIZE_MAX);
+	memory_full_up ();
     }
 
   if (dest_multibyte && some_unibyte)
@@ -1122,7 +1122,7 @@ concat_to_vector (ptrdiff_t nargs, Lisp_Object *args)
       EMACS_INT len = XFIXNAT (Flength (arg));
       result_len += len;
       if (MOST_POSITIVE_FIXNUM < result_len)
-	memory_full (SIZE_MAX);
+	memory_full_up ();
     }
 
   /* Create the output vector.  */
@@ -4672,7 +4672,7 @@ larger_vector (Lisp_Object vec, ptrdiff_t incr_min, ptrdiff_t nitems_max)
   incr_max = n_max - old_size;
   incr = max (incr_min, min (old_size >> 1, incr_max));
   if (incr_max < incr)
-    memory_full (SIZE_MAX);
+    memory_full_up ();
   new_size = old_size + incr;
   v = allocate_vector (new_size);
   memcpy (v->contents, XVECTOR (vec)->contents, old_size * sizeof *v->contents);
@@ -5480,10 +5480,10 @@ static EMACS_UINT
 sxhash_bignum (Lisp_Object bignum)
 {
   mpz_t const *n = xbignum_val (bignum);
-  size_t i, nlimbs = mpz_size (*n);
-  EMACS_UINT hash = mpz_sgn(*n) < 0;
+  ptrdiff_t nlimbs = mpz_size (*n);
+  EMACS_UINT hash = mpz_sgn (*n) < 0;
 
-  for (i = 0; i < nlimbs; ++i)
+  for (ptrdiff_t i = 0; i < nlimbs; i++)
     hash = sxhash_combine (hash, mpz_getlimbn (*n, i));
 
   return hash;
@@ -5996,7 +5996,7 @@ DEFUN ("internal--hash-table-histogram",
 {
   struct Lisp_Hash_Table *h = check_hash_table (hash_table);
   ptrdiff_t size = HASH_TABLE_SIZE (h);
-  ptrdiff_t *freq = xzalloc (size * sizeof *freq);
+  ptrdiff_t *freq = xcalloc (size, sizeof *freq);
   ptrdiff_t index_size = hash_table_index_size (h);
   for (ptrdiff_t i = 0; i < index_size; i++)
     {

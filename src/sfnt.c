@@ -4363,8 +4363,10 @@ sfnt_fill_span (struct sfnt_raster *raster, sfnt_fixed y,
 
   if ((left & ~SFNT_POLY_MASK) == (right & ~SFNT_POLY_MASK))
     {
+#ifndef NDEBUG
       /* Assert that start does not exceed the end of the row.  */
       eassert (start <= row_end);
+#endif /* !NDEBUG */
 
       w = coverage[right - left];
       a = *start + w;
@@ -4379,8 +4381,10 @@ sfnt_fill_span (struct sfnt_raster *raster, sfnt_fixed y,
 
   if (left & SFNT_POLY_MASK)
     {
+#ifndef NDEBUG
       /* Assert that start does not exceed the end of the row.  */
       eassert (start <= row_end);
+#endif /* !NDEBUG */
 
       /* Compute the coverage for the first pixel, and move left past
 	 it.  The coverage is a number from 1 to 7 describing how
@@ -4406,8 +4410,10 @@ sfnt_fill_span (struct sfnt_raster *raster, sfnt_fixed y,
   /* Fill pixels between left and right.  */
   while (left + SFNT_POLY_MASK < right)
     {
+#ifndef NDEBUG
       /* Assert that start does not exceed the end of the row.  */
       eassert (start <= row_end);
+#endif /* !NDEBUG */
 
       a = *start + w;
       *start++ = sfnt_saturate_short (a);
@@ -4418,8 +4424,10 @@ sfnt_fill_span (struct sfnt_raster *raster, sfnt_fixed y,
 
   if (right & SFNT_POLY_MASK)
     {
+#ifndef NDEBUG
       /* Assert that start does not exceed the end of the row.  */
       eassert (start <= row_end);
+#endif /* !NDEBUG */
 
       w = coverage[right - left];
       a = *start + w;
@@ -5848,7 +5856,7 @@ sfnt_read_meta_table (int fd, struct sfnt_offset_subtable *subtable)
   if (ckd_mul (&map_size, sizeof *meta->data_maps, meta->num_data_maps)
       /* Do so while checking for overflow from bad sfnt files.  */
       || directory->length - required < map_size
-      || ckd_add (&data_size, data_size, directory->length))
+      || ckd_add (&data_size, map_size, directory->length))
     {
       xfree (meta);
       return NULL;

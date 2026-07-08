@@ -1534,39 +1534,40 @@ uses OVERLAY."
              (unknown (propertize "<<unknown>>" 'face 'vc-dir-header-value))
              (buf (generate-new-buffer " *temp*" t))
              proc)
-        (with-current-buffer buf
-          (condition-case _
-              (progn
-                (vc-incoming-outgoing-internal backend nil
-                                               (current-buffer)
-                                               '(log-outgoing short))
-                (setq proc (get-buffer-process (current-buffer)))
-                (overlay-put overlay 'proc proc)
-                (vc-run-delayed
-                  (unwind-protect
-                      (overlay-put
-                       overlay 'after-string
-                       (if (or (not (eq (process-status proc) 'exit))
-                               (plusp (process-exit-status proc)))
-                           unknown
-                         (goto-char (point-min))
-                         (let ((count (how-many log-view-message-re)))
-                           (if (zerop count)
-                               (propertize "No unpushed revisions"
-                                           'face 'vc-dir-header-value)
-                             (propertize
-                              (format (ngettext "%d unpushed revision"
-                                                "%d unpushed revisions"
-                                                count)
-                                      count)
-                              'face 'vc-dir-header-urgent-value
-                              'mouse-face 'highlight
-                              'keymap vc-dir-outgoing-revisions-map
-                              'help-echo "\\<vc-dir-outgoing-revisions-map>\
+        (without-local-variable-queries
+          (with-current-buffer buf
+            (condition-case _
+                (progn
+                  (vc-incoming-outgoing-internal backend nil
+                                                 (current-buffer)
+                                                 '(log-outgoing short))
+                  (setq proc (get-buffer-process (current-buffer)))
+                  (overlay-put overlay 'proc proc)
+                  (vc-run-delayed
+                    (unwind-protect
+                        (overlay-put
+                         overlay 'after-string
+                         (if (or (not (eq (process-status proc) 'exit))
+                                 (plusp (process-exit-status proc)))
+                             unknown
+                           (goto-char (point-min))
+                           (let ((count (how-many log-view-message-re)))
+                             (if (zerop count)
+                                 (propertize "No unpushed revisions"
+                                             'face 'vc-dir-header-value)
+                               (propertize
+                                (format (ngettext "%d unpushed revision"
+                                                  "%d unpushed revisions"
+                                                  count)
+                                        count)
+                                'face 'vc-dir-header-urgent-value
+                                'mouse-face 'highlight
+                                'keymap vc-dir-outgoing-revisions-map
+                                'help-echo "\\<vc-dir-outgoing-revisions-map>\
 \\[vc-root-log-outgoing]: List outgoing revisions")))))
-                    (kill-buffer))))
-            (error (overlay-put overlay 'after-string unknown)
-                   (kill-buffer buf)))))))))
+                      (kill-buffer))))
+              (error (overlay-put overlay 'after-string unknown)
+                     (kill-buffer buf))))))))))
 
 (defvar-local vc-dir-async-header-values
   '(("Outgoing" . vc-dir--count-outgoing))
@@ -1652,7 +1653,7 @@ backend-specific headers."
      "(\\[vc-dir-hide-up-to-date]) Hide up-to-date"
      "\n"
      (vc-call-backend backend 'dir-extra-hints)
-     "\n")))
+     "\n" (make-separator-line) "\n")))
   (concat
    (and vc-dir-show-key-binding-hints vc-dir--key-binding-hints)
    (propertize "VC backend : " 'face 'vc-dir-header)
@@ -2011,7 +2012,7 @@ These are the commands available for use in the file status buffer:
       (vc-dir-refresh)
     ;; FIXME: find a better way to pass the backend to `vc-dir-mode'.
     (let ((use-vc-backend backend))
-      (vc-call-backend backend 'dir-mode)
+      (vc-dir-mode)
       ;; Activate the backend-specific minor mode, if any.
       (when-let* ((minor-mode
                    (intern-soft (format "vc-dir-%s-mode"

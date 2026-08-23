@@ -1757,25 +1757,31 @@ scroll the window of possible completions."
          (eq t (frame-visible-p (window-frame minibuffer-scroll-window))))
     (let ((window minibuffer-scroll-window))
       (with-current-buffer (window-buffer window)
-        (cond
-         ;; Here this is possible only when second-tab, but instead of
-         ;; scrolling the completion list window, switch to it below,
-         ;; outside of `with-current-buffer'.
-         ((eq completion-auto-select 'second-tab))
-         ;; Reverse tab
-         ((equal (this-command-keys) [backtab])
-          (if (pos-visible-in-window-p (point-min) window)
-              ;; If beginning is in view, scroll up to the end.
-              (set-window-point window (point-max))
-            ;; Else scroll down one screen.
-            (with-selected-window window (scroll-down))))
-         ;; Normal tab
-         (t
-          (if (pos-visible-in-window-p (point-max) window)
-              ;; If end is in view, scroll up to the end.
-              (set-window-start window (point-min) nil)
-            ;; Else scroll down one screen.
-            (with-selected-window window (scroll-up))))))
+        (let* ((pm (point-max))
+               ;; If completions buffer ends in a newline (e.g. when
+               ;; `completions-format' is 'vertical), disregard that
+               ;; when checking `pos-visible-in-window-p' to prevent
+               ;; unnecessary scrolling (bug#81630).
+               (pt (if (eq (char-before pm) ?\C-j) (1- pm) pm)))
+          (cond
+           ;; Here this is possible only when second-tab, but instead of
+           ;; scrolling the completion list window, switch to it below,
+           ;; outside of `with-current-buffer'.
+           ((eq completion-auto-select 'second-tab))
+           ;; Reverse tab
+           ((equal (this-command-keys) [backtab])
+            (if (pos-visible-in-window-p (point-min) window)
+                ;; If beginning is in view, scroll up to the end.
+                (set-window-point window pt)
+              ;; Else scroll down one screen.
+              (with-selected-window window (scroll-down))))
+           ;; Normal tab
+           (t
+            (if (pos-visible-in-window-p pt window)
+                ;; If end is in view, scroll up to the end.
+                (set-window-start window (point-min) nil)
+              ;; Else scroll down one screen.
+              (with-selected-window window (scroll-up)))))))
       (when (eq completion-auto-select 'second-tab)
         (switch-to-completions))
       nil))
@@ -2765,6 +2771,13 @@ The candidate will still be chosen by `choose-completion' unless
     (goto-char (or (next-single-property-change (point) 'completion--string)
                    (point-max)))))
 
+(defun completions--clear-selection ()
+  "Clear the selected candidate in the completions buffer.
+
+Unlike `completions--deselect' this fully clears all selected-completion
+state from the buffer."
+  (goto-char (point-min)))
+
 (defun completions--should-show-p (metadata &optional force-eager-update)
   "Return non-nil if *Completions* should be automatically updated or displayed.
 
@@ -3043,7 +3056,7 @@ has been requested by the completion table."
     (with-selected-window win
       ;; Move point off any completions, so we don't move point there
       ;; again the next time `minibuffer-completion-help' is called.
-      (goto-char (point-min))
+      (completions--clear-selection)
       (bury-buffer))))
 
 (defun exit-minibuffer ()

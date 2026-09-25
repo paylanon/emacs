@@ -256,6 +256,12 @@ have a backend, and 'vc-follow-symlinks' is non-nil, the truename is
 used instead.  Previously, the truename was used unconditionally.
 
 +++
+*** New option 'vc-dir-simple-unmark-all-files'.
+This inverts the meaning of a prefix argument to the existing 'U'
+('vc-dir-unmark-all-files') command, which some users may find more
+intuitive.
+
++++
 *** Improved creation of commit log entry from ChangeLog.
 When VC detects that all log entries for the current changeset come from
 the same ChangeLog file or buffer, it now inserts the entire body of the
@@ -269,6 +275,12 @@ entry differs from the current VC fileset, it displays a warning.
 The default definition of 'log-edit-headers-separator' now inherits its
 attributes from the face 'separator-line'.  That changes the default
 color and makes it work better in the terminal.
+
+---
+*** New user option 'vc-quick-select-current-working-tree'.
+If you customize this to non-nil, commands that may operate on any
+working tree no longer prompt when the current working tree is the only
+choice.
 
 ** Diff
 

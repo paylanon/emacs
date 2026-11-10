@@ -484,6 +484,12 @@ using lexical binding.
 Previously, HTML list items (<li>) were indented with a narrower width
 than <blockquote> elements.  Now, they all have the same indent width.
 
+---
+*** Ordered lists now support attributes modifying their appearance.
+Now, HTML ordered lists (<ol>) support changing the type (e.g. to use
+letters instead of numbers), the order (ascending or descending), and
+the starting value.
+
 ** Dired
 
 *** The 'repeat-mode' key 'j' has been removed from 'dired-jump-repeat-map'.
@@ -747,6 +753,12 @@ arbitrary directory order without sorting, which may be faster.
 The argument can also be a function of two parameters suitable as the
 ':lessp' argument of 'sort'.  For example, 'string-collate-lessp' would
 result in the locale-specific collation order one might see in Dired.
+
+---
+** New functions 'number-to-roman' and 'roman-to-number'.
+These functions convert between numbers and their Roman numeral forms.
+They were previously part of 'rst-mode' (as 'rst-arabic-to-roman' and
+'rst-roman-to-arabic'), but are now available as autoloaded functions.
 
 
 * Changes in Emacs 32.1 on Non-Free Operating Systems

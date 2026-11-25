@@ -7274,9 +7274,10 @@ area is busy with something else."
 	 (enough-time-passed
 	  ;; See if enough time has passed since the last update.
 	  (or (not update-time)
-	      (when (time-less-p update-time nil)
-		;; Calculate time for the next update
-		(aset parameters 0 (+ update-time (aref parameters 5)))))))
+              (let ((now (float-time)))
+	        (unless (< now update-time)
+		  ;; Calculate time for the next update
+		  (aset parameters 0 (+ now (aref parameters 5))))))))
     (cond ((and min-value max-value)
 	   ;; Numerical indicator
 	   (let* ((one-percent (/ (- max-value min-value) 100.0))
